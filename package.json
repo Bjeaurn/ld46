@@ -14,10 +14,10 @@
   "devDependencies": {
     "parcel": "^1.9.7",
     "parcel-plugin-static-files-copy": "^1.1.0",
-    "typescript": "^3.0.1"
+    "typescript": "^3.8.3"
   },
   "dependencies": {
     "fs": "0.0.1-security",
-    "gine": "^3.2.0"
+    "gine": "^4.1.0"
   }
 }
