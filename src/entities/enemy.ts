@@ -97,7 +97,7 @@ export class Enemy extends Entity {
 		Entity.delete(this)
 	}
 
-	static IsEnemy(e: Entity): boolean {
+	static IsEnemy(e: Entity): e is Enemy {
 		return e && !!e.type && e.type === 'enemy'
 	}
 }

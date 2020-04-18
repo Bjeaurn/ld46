@@ -12,31 +12,43 @@ export class Tower extends Entity {
 	attackDelay: number = 0
 	hitDelay: number = 0
 	range: number = 80
-	target?: Enemy
+	maxTargets: number = 1
+	targets: Enemy[] = []
 	constructor(img: ImageAsset, x: number, y: number) {
 		super(img)
 		this.pos.x = x
 		this.pos.y = y
-		console.log(this)
 	}
 
 	update() {
-		if (this.target) {
-			this.fireOnTarget(this.target)
-			if (this.target.health <= 0) {
-				this.target = undefined
+		if (!!this.targets && this.targets.length > 0) {
+			if (this.attackDelay > 0) {
+				this.attackDelay -= 1
+			} else {
+				this.targets.forEach((target, idx) => {
+					target.hit(this.damage)
+					if (target !== undefined && target.health <= 0) {
+						this.targets!.splice(idx, 1)
+					}
+				})
+				this.attackDelay = this.attackSpeed
 			}
-		} else {
+		}
+		if (this.targets.length <= this.maxTargets) {
 			this.lookForTarget()
 		}
 	}
 
 	draw(cameraPos: Position) {
-		if (this.target) {
+		if (
+			this.targets &&
+			this.targets.length > 0 &&
+			this.targets[0] !== undefined
+		) {
 			this.direction =
 				Math.atan2(
-					this.target.pos.y - this.pos.y,
-					this.target.pos.x - this.pos.x
+					this.targets[0].pos.y - this.pos.y,
+					this.targets[0].pos.x - this.pos.x
 				) *
 					(180 / Math.PI) +
 				90
@@ -60,15 +72,6 @@ export class Tower extends Entity {
 		return { x, y }
 	}
 
-	fireOnTarget(target: Enemy) {
-		if (this.attackDelay > 0) {
-			this.attackDelay -= 1
-		} else {
-			target.hit(this.damage)
-			this.attackDelay = this.attackSpeed
-		}
-	}
-
 	calculateDistance(target: Enemy) {
 		const x = target.pos.x - this.pos.x
 		const y = target.pos.y - this.pos.y
@@ -76,12 +79,18 @@ export class Tower extends Entity {
 	}
 
 	lookForTarget() {
-		this.target = Entity.getInCircle(this.pos.x, this.pos.y, this.range).filter(
-			Enemy.IsEnemy
-		)[0] as Enemy
+		const targets = Entity.getInCircle(this.pos.x, this.pos.y, this.range)
+			.filter(Enemy.IsEnemy)
+			.filter((target) => {
+				const idx = this.targets.findIndex((t) => t.id === target.id)
+				return idx === -1
+			})
+		if (targets.length > 0) {
+			this.targets.push(...targets)
+		}
 	}
 
-	static IsTower(e: Entity): boolean {
+	static IsTower(e: Entity): e is Tower {
 		return e && !!e.type && e.type === 'tower'
 	}
 }

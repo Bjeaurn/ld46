@@ -8,7 +8,7 @@ export class Entity {
 	direction: number = 0
 	img: ImageAsset
 	type: string = 'entity'
-	private id: number = id++
+	public id: number = id++
 
 	constructor(img: ImageAsset) {
 		this.img = img

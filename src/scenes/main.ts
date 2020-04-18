@@ -5,6 +5,7 @@ import { Camera } from '../camera'
 import { Core } from '../entities/core'
 import { Enemy } from '../entities/enemy'
 import { drawRange, showTowerData, Tower } from '../entities/tower'
+import { MultiTower } from '../entities/towers/multitower'
 import { Entity } from '../entity'
 import { Game } from '../game'
 import { GameMap } from '../map'
@@ -42,7 +43,7 @@ export class MainScene extends Scene {
 			{
 				maxHealth: level.maxHealth,
 				worth: level.worth,
-				moveSpeed: level.moveSpeed,
+		?		moveSpeed: level.moveSpeed,
 			},
 			120
 		)
@@ -51,6 +52,7 @@ export class MainScene extends Scene {
 			.pipe(
 				filter((m) => m.type === 'mousedown'),
 				tap((m) => {
+					console.log(m)
 					const xy = Tower.convertMouseToXY(m, this.camera)
 					const existing = Entity.getInRange(xy.x, xy.y, 16).filter(
 						Tower.IsTower
@@ -60,7 +62,13 @@ export class MainScene extends Scene {
 					} else {
 						if (Game.MONEY >= Game.towerPrice) {
 							Game.MONEY -= Game.towerPrice
-							Entity.entities.push(new Tower(this.tower1, xy.x, xy.y))
+							if (m.button === 0) {
+								Entity.entities.push(new Tower(this.tower1, xy.x, xy.y))
+							} else {
+								Entity.entities.push(
+									new MultiTower(this.tower1, xy.x, xy.y)
+								)
+							}
 						}
 					}
 				})
