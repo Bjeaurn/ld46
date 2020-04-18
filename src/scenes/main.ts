@@ -1,19 +1,23 @@
 import { Gine, KEYCODES, Scene } from 'gine'
+import { filter, tap } from 'rxjs/operators'
 
 import { Camera } from '../camera'
 import { Core } from '../entities/core'
 import { Enemy } from '../entities/enemy'
 import { Tower } from '../entities/tower'
 import { Entity } from '../entity'
+import { Game } from '../game'
 import { GameMap } from '../map'
+import { Spawner } from '../spawner'
 
 export class MainScene extends Scene {
 	readonly bg = Gine.store.get('background')
 	readonly placeholder = Gine.store.get('placeholder')
-	readonly spider = Gine.store.get('spider')
+	readonly coin = Gine.store.get('coin')
 	map: GameMap = new GameMap(32, 32)
 	camera: Camera = new Camera()
-	core: Core = new Core(this.placeholder)
+	core: Core = new Core(Gine.store.get('core')!)
+	game: Game = new Game()
 
 	constructor() {
 		super()
@@ -29,17 +33,32 @@ export class MainScene extends Scene {
 			y: half * Gine.CONFIG.tileSize,
 		}
 		Entity.entities.push(this.core)
-		const spider = new Enemy(this.spider, this.core.pos)
-		spider.direction = 180
-		spider.pos = {
-			x: half * Gine.CONFIG.tileSize,
-			y: 0,
-		}
-		Entity.entities.push(spider)
-
-		const tower = new Tower(this.placeholder)
-		tower.pos = { x: 440, y: 440 }
-		Entity.entities.push(tower)
+		new Spawner(this.core.pos, 1, 60)
+		Gine.mouse.mouse$
+			.pipe(
+				filter((m) => m.type === 'mousedown'),
+				tap((m) => {
+					if (Game.MONEY >= Game.towerPrice) {
+						Game.MONEY -= Game.towerPrice
+						const adjusted = this.camera.adjustPosition()
+						const x =
+							Math.floor((m.x + adjusted.x) / Gine.CONFIG.tileSize) *
+								Gine.CONFIG.tileSize +
+							Gine.CONFIG.tileSize
+						const y =
+							Math.floor((m.y + adjusted.y) / Gine.CONFIG.tileSize) *
+								Gine.CONFIG.tileSize +
+							Gine.CONFIG.tileSize
+						if (
+							Entity.getInRange(x, y, 16).filter(Tower.IsTower).length === 0
+						) {
+							Entity.entities.push(new Tower(this.placeholder, x, y))
+						}
+					} else {
+					}
+				})
+			)
+			.subscribe()
 	}
 
 	tick() {
@@ -73,6 +92,12 @@ export class MainScene extends Scene {
 				e.die()
 				this.core.damage()
 			})
+
+		if (Game.levelCompleted === true) {
+			Game.levelCompleted = false
+			Game.LEVEL++
+			new Spawner(this.core.pos, Game.LEVEL, 60)
+		}
 	}
 
 	frame() {
@@ -80,6 +105,11 @@ export class MainScene extends Scene {
 		Entity.entities.forEach((e) => {
 			e.draw(this.camera.adjustPosition())
 		})
+		const moneyWidth = Gine.handle.handle.measureText('' + Game.MONEY).width
+		Gine.handle.draw(this.coin, Gine.CONFIG.width - 16, 8)
+		Gine.handle.setColor(242, 242, 73)
+		Gine.handle.text(Game.MONEY, Gine.CONFIG.width - moneyWidth - 20, 20)
+		Gine.handle.setColor(255, 255, 255)
 		if (this.core.health <= 0) {
 			Gine.handle.text(
 				'You have lost!',

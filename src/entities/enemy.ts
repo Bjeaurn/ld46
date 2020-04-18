@@ -1,6 +1,7 @@
 import { Gine, ImageAsset } from 'gine'
 
 import { Entity } from '../entity'
+import { Game } from '../game'
 import { Position } from '../map'
 
 export class Enemy extends Entity {
@@ -8,10 +9,21 @@ export class Enemy extends Entity {
 	health: number = this.maxHealth
 	target: Position
 	moveSpeed: number = 0.2
+	worth: number = 1
 	type: 'enemy' = 'enemy'
-	constructor(img: ImageAsset, target: Position) {
+	constructor(
+		img: ImageAsset,
+		target: Position,
+		direction: number,
+		x: number,
+		y: number,
+		private delay: number = 0
+	) {
 		super(img)
 		this.target = target
+		this.pos.x = x
+		this.pos.y = y
+		this.direction = direction
 	}
 
 	hit(damage: number) {
@@ -22,17 +34,21 @@ export class Enemy extends Entity {
 	}
 
 	update() {
-		let vector: Position = {
-			x: this.target.x - this.pos.x,
-			y: this.target.y - this.pos.y,
-		}
-		if (vector.x > 0) vector.x = 1
-		if (vector.x < 0) vector.x = -1
-		if (vector.y > 0) vector.y = 1
-		if (vector.y < 0) vector.y = -1
+		if (this.delay > 0) {
+			this.delay--
+		} else {
+			let vector: Position = {
+				x: this.target.x - this.pos.x,
+				y: this.target.y - this.pos.y,
+			}
+			if (vector.x > 0) vector.x = 1
+			if (vector.x < 0) vector.x = -1
+			if (vector.y > 0) vector.y = 1
+			if (vector.y < 0) vector.y = -1
 
-		this.pos.x += vector.x * this.moveSpeed
-		this.pos.y += vector.y * this.moveSpeed
+			this.pos.x += vector.x * this.moveSpeed
+			this.pos.y += vector.y * this.moveSpeed
+		}
 	}
 
 	draw(cameraPos: Position) {
@@ -58,9 +74,11 @@ export class Enemy extends Entity {
 			width,
 			6
 		)
+		Gine.handle.handle.fillStyle = 'black'
 	}
 
 	die() {
+		Game.ENEMYKILLED(this.worth)
 		Entity.delete(this)
 	}
 

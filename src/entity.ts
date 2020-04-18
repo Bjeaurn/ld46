@@ -52,5 +52,6 @@ export class Entity {
 		if (idx > -1) {
 			Entity.entities.splice(idx, 1)
 		}
+		console.log(Entity.entities)
 	}
 }

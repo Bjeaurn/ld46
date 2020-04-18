@@ -11,14 +11,19 @@ export class Tower extends Entity {
 	attackDelay: number = 0
 	range: number = 80
 	target?: Enemy
-	constructor(img: ImageAsset) {
+	constructor(img: ImageAsset, x: number, y: number) {
 		super(img)
+		this.pos.x = x
+		this.pos.y = y
 		console.log(this)
 	}
 
 	update() {
 		if (this.target) {
 			this.fireOnTarget(this.target)
+			if (this.target.health <= 0) {
+				this.target = undefined
+			}
 		} else {
 			this.lookForTarget()
 		}
@@ -26,6 +31,9 @@ export class Tower extends Entity {
 
 	draw(cameraPos: Position) {
 		super.draw(cameraPos)
+	}
+
+	drawRange(cameraPos: Position) {
 		Gine.handle.handle.beginPath()
 		Gine.handle.handle.ellipse(
 			this.pos.x - this.img.width / 2 - cameraPos.x,

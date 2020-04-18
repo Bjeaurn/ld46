@@ -24,6 +24,8 @@ const assets: any[] = [
 	{ name: 'path', src: 'path.png' },
 	{ name: 'path-lr', src: 'path-lr.png' },
 	{ name: 'spider', src: 'spider.png' },
+	{ name: 'core', src: 'core.png' },
+	{ name: 'coin', src: 'coin.png' },
 ]
 assets.forEach((d) => {
 	Gine.store.image(d.name, d.src)
@@ -33,6 +35,7 @@ game.changeScene(mainScene)
 game.start()
 
 Gine.keyboard.key$.subscribe()
+Gine.mouse.mouse$.subscribe()
 
 Gine.events
 	.pipe(filter((ev) => ev === Scene.DESTROY_CURRENT_SCENE))

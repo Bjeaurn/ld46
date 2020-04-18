@@ -44,7 +44,6 @@ export class GameMap {
 	}
 
 	draw(cameraPos: Position = { x: 0, y: 0 }) {
-		console.log(this.path)
 		this.mapArray.forEach((v, i) => {
 			const pos = this.indexToXY(i)
 			let img = this.bg
