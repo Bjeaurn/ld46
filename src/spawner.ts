@@ -1,6 +1,6 @@
 import { Gine } from 'gine'
 
-import { Enemy } from './entities/enemy'
+import { Enemy, EnemyOptions } from './entities/enemy'
 import { Entity } from './entity'
 import { Game } from './game'
 import { Position } from './map'
@@ -18,6 +18,7 @@ export class Spawner {
 	constructor(
 		private target: Position,
         private amountOfEnemiesPerLane: number,
+        private enemyOptions: EnemyOptions,
         private spread: number = 16,
 		private lanes: [boolean, boolean, boolean, boolean] = [
 			true,
@@ -30,7 +31,7 @@ export class Spawner {
 			if (val === true) 
 				for (var i = 0; i < this.amountOfEnemiesPerLane; i++) {
                     const lane = this.lanePositions[idx]
-                    Entity.entities.push(new Enemy(this.spider, this.target, lane.direction, lane.x, lane.y, i * 120))
+                    Entity.entities.push(new Enemy(this.spider, this.target, lane.direction, lane.x, lane.y, i * spread, this.enemyOptions))
                     Game.enemies++
 				}
 			}

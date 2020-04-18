@@ -47,11 +47,9 @@ export class Entity {
 	}
 
 	static delete(e: Entity) {
-		console.log(e)
 		const idx = Entity.entities.findIndex((et) => et.id === e.id)
 		if (idx > -1) {
 			Entity.entities.splice(idx, 1)
 		}
-		console.log(Entity.entities)
 	}
 }

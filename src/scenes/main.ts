@@ -13,6 +13,7 @@ import { Spawner } from '../spawner'
 export class MainScene extends Scene {
 	readonly bg = Gine.store.get('background')
 	readonly placeholder = Gine.store.get('placeholder')
+	readonly tower1 = Gine.store.get('tower-1')
 	readonly coin = Gine.store.get('coin')
 	map: GameMap = new GameMap(32, 32)
 	camera: Camera = new Camera()
@@ -33,7 +34,18 @@ export class MainScene extends Scene {
 			y: half * Gine.CONFIG.tileSize,
 		}
 		Entity.entities.push(this.core)
-		new Spawner(this.core.pos, 1, 60)
+		const level = LEVELS[0]
+		new Spawner(
+			this.core.pos,
+			level.amount,
+			{
+				maxHealth: level.maxHealth,
+				worth: level.worth,
+				moveSpeed: level.moveSpeed,
+			},
+			120
+		)
+
 		Gine.mouse.mouse$
 			.pipe(
 				filter((m) => m.type === 'mousedown'),
@@ -52,7 +64,7 @@ export class MainScene extends Scene {
 						if (
 							Entity.getInRange(x, y, 16).filter(Tower.IsTower).length === 0
 						) {
-							Entity.entities.push(new Tower(this.placeholder, x, y))
+							Entity.entities.push(new Tower(this.tower1, x, y))
 						}
 					} else {
 					}
@@ -96,7 +108,21 @@ export class MainScene extends Scene {
 		if (Game.levelCompleted === true) {
 			Game.levelCompleted = false
 			Game.LEVEL++
-			new Spawner(this.core.pos, Game.LEVEL, 60)
+			const level = LEVELS[Game.LEVEL]
+			if (level) {
+				new Spawner(
+					this.core.pos,
+					level.amount,
+					{
+						maxHealth: level.maxHealth,
+						worth: level.worth,
+						moveSpeed: level.moveSpeed,
+					},
+					120
+				)
+			} else {
+				// default to randomness!
+			}
 		}
 	}
 
@@ -119,3 +145,15 @@ export class MainScene extends Scene {
 		}
 	}
 }
+
+const LEVELS: {
+	maxHealth: number
+	moveSpeed: number
+	worth: number
+	amount: number
+}[] = [
+	{ maxHealth: 3, moveSpeed: 0.2, worth: 1, amount: 3 },
+	{ maxHealth: 3, moveSpeed: 0.3, worth: 1, amount: 5 },
+	{ maxHealth: 5, moveSpeed: 0.25, worth: 2, amount: 5 },
+	{ maxHealth: 5, moveSpeed: 0.4, worth: 2, amount: 5 },
+]

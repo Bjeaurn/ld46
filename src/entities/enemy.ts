@@ -4,12 +4,18 @@ import { Entity } from '../entity'
 import { Game } from '../game'
 import { Position } from '../map'
 
+export interface EnemyOptions {
+	maxHealth: number
+	moveSpeed: number
+	worth: number
+}
+
 export class Enemy extends Entity {
-	maxHealth: number = 6
-	health: number = this.maxHealth
+	maxHealth: number
+	health: number
 	target: Position
-	moveSpeed: number = 0.2
-	worth: number = 1
+	moveSpeed: number
+	worth: number
 	type: 'enemy' = 'enemy'
 	constructor(
 		img: ImageAsset,
@@ -17,13 +23,22 @@ export class Enemy extends Entity {
 		direction: number,
 		x: number,
 		y: number,
-		private delay: number = 0
+		private delay: number = 0,
+		private options: EnemyOptions = {
+			maxHealth: 3,
+			moveSpeed: 0.2,
+			worth: 1,
+		}
 	) {
 		super(img)
 		this.target = target
 		this.pos.x = x
 		this.pos.y = y
 		this.direction = direction
+		this.maxHealth = this.options.maxHealth
+		this.health = this.maxHealth
+		this.moveSpeed = options.moveSpeed
+		this.worth = options.worth
 	}
 
 	hit(damage: number) {

@@ -9,6 +9,7 @@ export class Tower extends Entity {
 	damage: number = 1
 	attackSpeed: number = 40
 	attackDelay: number = 0
+	hitDelay: number = 0
 	range: number = 80
 	target?: Enemy
 	constructor(img: ImageAsset, x: number, y: number) {
@@ -30,6 +31,15 @@ export class Tower extends Entity {
 	}
 
 	draw(cameraPos: Position) {
+		if (this.target) {
+			this.direction =
+				Math.atan2(
+					this.target.pos.y - this.pos.y,
+					this.target.pos.x - this.pos.x
+				) *
+					(180 / Math.PI) +
+				90
+		}
 		super.draw(cameraPos)
 	}
 
@@ -54,6 +64,12 @@ export class Tower extends Entity {
 			target.hit(this.damage)
 			this.attackDelay = this.attackSpeed
 		}
+	}
+
+	calculateDistance(target: Enemy) {
+		const x = target.pos.x - this.pos.x
+		const y = target.pos.y - this.pos.y
+		this.hitDelay = Math.abs(x + y)
 	}
 
 	lookForTarget() {
