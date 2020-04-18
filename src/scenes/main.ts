@@ -4,7 +4,7 @@ import { filter, tap } from 'rxjs/operators'
 import { Camera } from '../camera'
 import { Core } from '../entities/core'
 import { Enemy } from '../entities/enemy'
-import { Tower } from '../entities/tower'
+import { drawRange, showTowerData, Tower } from '../entities/tower'
 import { Entity } from '../entity'
 import { Game } from '../game'
 import { GameMap } from '../map'
@@ -19,6 +19,7 @@ export class MainScene extends Scene {
 	camera: Camera = new Camera()
 	core: Core = new Core(Gine.store.get('core')!)
 	game: Game = new Game()
+	selectedTower?: Tower = undefined
 
 	constructor() {
 		super()
@@ -50,27 +51,37 @@ export class MainScene extends Scene {
 			.pipe(
 				filter((m) => m.type === 'mousedown'),
 				tap((m) => {
-					if (Game.MONEY >= Game.towerPrice) {
-						Game.MONEY -= Game.towerPrice
-						const adjusted = this.camera.adjustPosition()
-						const x =
-							Math.floor((m.x + adjusted.x) / Gine.CONFIG.tileSize) *
-								Gine.CONFIG.tileSize +
-							Gine.CONFIG.tileSize
-						const y =
-							Math.floor((m.y + adjusted.y) / Gine.CONFIG.tileSize) *
-								Gine.CONFIG.tileSize +
-							Gine.CONFIG.tileSize
-						if (
-							Entity.getInRange(x, y, 16).filter(Tower.IsTower).length === 0
-						) {
-							Entity.entities.push(new Tower(this.tower1, x, y))
-						}
+					const xy = Tower.convertMouseToXY(m, this.camera)
+					const existing = Entity.getInRange(xy.x, xy.y, 16).filter(
+						Tower.IsTower
+					)
+					if (existing.length === 1) {
+						this.selectedTower = existing[0] as Tower
 					} else {
+						if (Game.MONEY >= Game.towerPrice) {
+							Game.MONEY -= Game.towerPrice
+							Entity.entities.push(new Tower(this.tower1, xy.x, xy.y))
+						}
 					}
 				})
 			)
 			.subscribe()
+
+		// Gine.mouse.mouse$
+		// 	.pipe(
+		// 		tap((e) => {
+		// 			const xy = Tower.convertMouseToXY(e, this.camera)
+		// 			const adjusted = this.camera.adjustPosition()
+		// 			// Gine.handle.handle.filter = 'grayscale(50%) opacity(50%)'
+		// 			Gine.handle.draw(
+		// 				this.tower1,
+		// 				xy.x - adjusted.x - Gine.CONFIG.tileSize,
+		// 				xy.y - adjusted.y - Gine.CONFIG.tileSize
+		// 			)
+		// 			// Gine.handle.handle.filter = ''
+		// 		})
+		// 	)
+		// 	.subscribe()
 	}
 
 	tick() {
@@ -92,6 +103,10 @@ export class MainScene extends Scene {
 			}
 			if (Gine.keyboard.isPressed(KEYCODES.DOWN_ARROW)) {
 				y += 1
+			}
+
+			if (Gine.keyboard.isPressed(KEYCODES.ESCAPE)) {
+				this.selectedTower = undefined
 			}
 			this.camera.move(x, y)
 		}
@@ -136,6 +151,12 @@ export class MainScene extends Scene {
 		Gine.handle.setColor(242, 242, 73)
 		Gine.handle.text(Game.MONEY, Gine.CONFIG.width - moneyWidth - 20, 20)
 		Gine.handle.setColor(255, 255, 255)
+
+		if (this.selectedTower) {
+			showTowerData(this.selectedTower, this.camera)
+			drawRange(this.selectedTower, this.camera.adjustPosition())
+		}
+
 		if (this.core.health <= 0) {
 			Gine.handle.text(
 				'You have lost!',
