@@ -1,12 +1,13 @@
-import { ImageAsset } from 'gine'
+import { Gine, ImageAsset } from 'gine'
 
 import { Entity } from '../entity'
+import { Position } from '../map'
 import { Enemy } from './enemy'
 
 export class Tower extends Entity {
 	type: 'tower' = 'tower'
 	damage: number = 1
-	attackSpeed: number = 1
+	attackSpeed: number = 40
 	attackDelay: number = 0
 	range: number = 80
 	target?: Enemy
@@ -21,6 +22,21 @@ export class Tower extends Entity {
 		} else {
 			this.lookForTarget()
 		}
+	}
+
+	draw(cameraPos: Position) {
+		super.draw(cameraPos)
+		Gine.handle.handle.beginPath()
+		Gine.handle.handle.ellipse(
+			this.pos.x - this.img.width / 2 - cameraPos.x,
+			this.pos.y - this.img.height / 2 - cameraPos.y,
+			this.range,
+			this.range,
+			Math.PI / 4,
+			0,
+			2 * Math.PI
+		)
+		Gine.handle.handle.stroke()
 	}
 
 	fireOnTarget(target: Enemy) {

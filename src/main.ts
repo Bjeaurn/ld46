@@ -21,6 +21,8 @@ const game = new Gine(cfg)
 const assets: any[] = [
 	{ name: 'placeholder', src: 'placeholder.png' },
 	{ name: 'background', src: 'background.png' },
+	{ name: 'path', src: 'path.png' },
+	{ name: 'path-lr', src: 'path-lr.png' },
 	{ name: 'spider', src: 'spider.png' },
 ]
 assets.forEach((d) => {

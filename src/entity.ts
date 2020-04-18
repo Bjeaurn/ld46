@@ -17,8 +17,8 @@ export class Entity {
 	draw(cameraPos: Position) {
 		Math2D.rotate(
 			this.img,
-			this.pos.x - cameraPos.x,
-			this.pos.y - cameraPos.y,
+			this.pos.x - this.img.width / 2 - cameraPos.x,
+			this.pos.y - this.img.height / 2 - cameraPos.y,
 			this.direction
 		)
 	}

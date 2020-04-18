@@ -1,12 +1,13 @@
-import { ImageAsset } from 'gine'
+import { Gine, ImageAsset } from 'gine'
 
 import { Entity } from '../entity'
 import { Position } from '../map'
 
 export class Enemy extends Entity {
-	health: number = 1
+	maxHealth: number = 6
+	health: number = this.maxHealth
 	target: Position
-	moveSpeed: number = 0.5
+	moveSpeed: number = 0.2
 	type: 'enemy' = 'enemy'
 	constructor(img: ImageAsset, target: Position) {
 		super(img)
@@ -32,6 +33,31 @@ export class Enemy extends Entity {
 
 		this.pos.x += vector.x * this.moveSpeed
 		this.pos.y += vector.y * this.moveSpeed
+	}
+
+	draw(cameraPos: Position) {
+		super.draw(cameraPos)
+		Gine.handle.handle.strokeRect(
+			this.pos.x - this.img.width - cameraPos.x,
+			this.pos.y - this.img.height - cameraPos.y - 4,
+			this.img.width,
+			6
+		)
+		const healthPercentage = this.health / this.maxHealth
+		const width = healthPercentage * this.img.width
+		Gine.handle.handle.fillStyle = 'green'
+		if (healthPercentage < 0.5) {
+			Gine.handle.handle.fillStyle = 'yellow'
+		}
+		if (healthPercentage < 0.2) {
+			Gine.handle.handle.fillStyle = 'red'
+		}
+		Gine.handle.handle.fillRect(
+			this.pos.x - this.img.width - cameraPos.x,
+			this.pos.y - this.img.height - cameraPos.y - 4,
+			width,
+			6
+		)
 	}
 
 	die() {
