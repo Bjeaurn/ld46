@@ -5,7 +5,6 @@ import { Camera } from '../camera'
 import { Core } from '../entities/core'
 import { Enemy } from '../entities/enemy'
 import { drawRange, showTowerData, Tower } from '../entities/tower'
-import { MultiTower } from '../entities/towers/multitower'
 import { Entity } from '../entity'
 import { Game } from '../game'
 import { GameMap } from '../map'
@@ -60,15 +59,9 @@ export class MainScene extends Scene {
 					if (existing.length === 1) {
 						this.selectedTower = existing[0] as Tower
 					} else {
-						if (Game.MONEY >= Game.towerPrice) {
-							Game.MONEY -= Game.towerPrice
-							if (m.button === 0) {
-								Entity.entities.push(new Tower(this.tower1, xy.x, xy.y))
-							} else {
-								Entity.entities.push(
-									new MultiTower(this.tower1, xy.x, xy.y)
-								)
-							}
+						if (Game.MONEY >= Tower.cost) {
+							Game.MONEY -= Tower.cost
+							Entity.entities.push(new Tower(this.tower1, xy.x, xy.y))
 						}
 					}
 				})

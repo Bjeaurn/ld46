@@ -13,6 +13,7 @@ export class Tower extends Entity {
 	hitDelay: number = 0
 	range: number = 80
 	maxTargets: number = 1
+	static cost: number = 10
 	targets: Enemy[] = []
 	constructor(img: ImageAsset, x: number, y: number) {
 		super(img)
