@@ -9,6 +9,7 @@ import { Entity } from '../entity'
 import { Game } from '../game'
 import { GameMap } from '../map'
 import { Spawner } from '../spawner'
+import { UI } from '../ui'
 
 export class MainScene extends Scene {
 	readonly bg = Gine.store.get('background')
@@ -20,10 +21,10 @@ export class MainScene extends Scene {
 	core: Core = new Core(Gine.store.get('core')!)
 	game: Game = new Game()
 	selectedTower?: Tower = undefined
+	ui: UI = new UI()
 
 	constructor() {
 		super()
-		console.log(this.map)
 	}
 
 	init() {
@@ -51,18 +52,21 @@ export class MainScene extends Scene {
 			.pipe(
 				filter((m) => m.type === 'mousedown'),
 				tap((m) => {
-					console.log(m)
 					const xy = Tower.convertMouseToXY(m, this.camera)
 					const existing = Entity.getInRange(xy.x, xy.y, 16).filter(
 						Tower.IsTower
 					)
 					if (existing.length === 1) {
 						this.selectedTower = existing[0] as Tower
-					} else {
-						if (Game.MONEY >= Tower.cost) {
-							Game.MONEY -= Tower.cost
-							Entity.entities.push(new Tower(this.tower1, xy.x, xy.y))
+					} else if(this.ui.selectedTower) {
+						console.log(this.ui.selectedTower)
+						if (Game.MONEY >= (this.ui.selectedTower as any).cost) {
+							Game.MONEY -= (this.ui.selectedTower as any).cost
+							const t = new this.ui.selectedTower(this.tower1, xy.x, xy.y)
+							Entity.entities.push(t)
 						}
+					} else {
+						console.log(this.ui)
 					}
 				})
 			)
@@ -110,6 +114,8 @@ export class MainScene extends Scene {
 				this.selectedTower = undefined
 			}
 			this.camera.move(x, y)
+
+			this.ui.update()
 		}
 
 		Entity.entities.forEach((e) => e.update())
@@ -152,7 +158,9 @@ export class MainScene extends Scene {
 		Gine.handle.setColor(242, 242, 73)
 		Gine.handle.text(Game.MONEY, Gine.CONFIG.width - moneyWidth - 20, 20)
 		Gine.handle.setColor(255, 255, 255)
-
+		
+		this.ui.draw()
+		
 		if (this.selectedTower) {
 			showTowerData(this.selectedTower, this.camera)
 			drawRange(this.selectedTower, this.camera.adjustPosition())

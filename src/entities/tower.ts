@@ -7,6 +7,7 @@ import { Enemy } from './enemy'
 
 export class Tower extends Entity {
 	type: 'tower' = 'tower'
+	name: string = 'Single Shot'
 	damage: number = 1
 	attackSpeed: number = 40
 	attackDelay: number = 0
@@ -102,7 +103,7 @@ export function showTowerData(tower: Tower, camera: Camera) {
 	Gine.handle.handle.fillStyle = 'rgba(255, 255, 255, 0.6)'
 	Gine.handle.handle.fillRect(x - 20, y - 60, 60, 80)
 	Gine.handle.setColor(0, 0, 0)
-	Gine.handle.text('Tower', x - 16, y - 48)
+	Gine.handle.text(tower.name, x - 16, y - 48)
 	Gine.handle.text('Damage: ' + tower.damage, x - 16, y - 28)
 	Gine.handle.text('Range: ' + tower.range, x - 16, y - 16)
 	Gine.handle.text('Speed: ' + tower.attackSpeed, x - 16, y - 4)
