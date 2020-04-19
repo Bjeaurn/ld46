@@ -59,34 +59,32 @@ export class MainScene extends Scene {
 					if (existing.length === 1) {
 						this.selectedTower = existing[0] as Tower
 					} else if(this.ui.selectedTower) {
-						console.log(this.ui.selectedTower)
 						if (Game.MONEY >= (this.ui.selectedTower as any).cost) {
 							Game.MONEY -= (this.ui.selectedTower as any).cost
 							const t = new this.ui.selectedTower(this.tower1, xy.x, xy.y)
 							Entity.entities.push(t)
+							this.ui.selectedTower = undefined
 						}
-					} else {
-						console.log(this.ui)
 					}
 				})
 			)
 			.subscribe()
 
-		// Gine.mouse.mouse$
-		// 	.pipe(
-		// 		tap((e) => {
-		// 			const xy = Tower.convertMouseToXY(e, this.camera)
-		// 			const adjusted = this.camera.adjustPosition()
-		// 			// Gine.handle.handle.filter = 'grayscale(50%) opacity(50%)'
-		// 			Gine.handle.draw(
-		// 				this.tower1,
-		// 				xy.x - adjusted.x - Gine.CONFIG.tileSize,
-		// 				xy.y - adjusted.y - Gine.CONFIG.tileSize
-		// 			)
-		// 			// Gine.handle.handle.filter = ''
-		// 		})
-		// 	)
-		// 	.subscribe()
+		Gine.mouse.mouse$
+			.pipe(
+				tap((e) => {
+					if(this.ui.selectedTower) {
+						const xy = Tower.convertMouseToXY(e, this.camera)
+						const adjusted = this.camera.adjustPosition()
+						Gine.handle.draw(
+							this.tower1,
+							xy.x - adjusted.x - Gine.CONFIG.tileSize,
+							xy.y - adjusted.y - Gine.CONFIG.tileSize
+						)
+					}
+				})
+			)
+			.subscribe()
 	}
 
 	tick() {
@@ -123,7 +121,7 @@ export class MainScene extends Scene {
 		Entity.getInRange(this.core.pos.x, this.core.pos.y, 12)
 			.filter(Enemy.IsEnemy)
 			.map((e) => {
-				e.die()
+				Entity.delete(e)
 				this.core.damage()
 			})
 
@@ -158,6 +156,7 @@ export class MainScene extends Scene {
 		Gine.handle.setColor(242, 242, 73)
 		Gine.handle.text(Game.MONEY, Gine.CONFIG.width - moneyWidth - 20, 20)
 		Gine.handle.setColor(255, 255, 255)
+		Gine.handle.text('Level: '+Game.LEVEL+' / '+LEVELS.length, Gine.CONFIG.width-60, 40)
 		
 		this.ui.draw()
 		
