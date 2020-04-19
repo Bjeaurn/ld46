@@ -13,6 +13,8 @@ export class Tower extends Entity {
 	attackDelay: number = 0
 	hitDelay: number = 0
 	range: number = 80
+	areaOfEffect: boolean = false
+	areaOfEffectArea: number = 0
 	maxTargets: number = 1
 	static cost: number = 10
 	targets: Enemy[] = []
@@ -27,22 +29,36 @@ export class Tower extends Entity {
 			if (this.attackDelay > 0) {
 				this.attackDelay -= 1
 			} else {
-				this.targets.forEach((target, idx) => {
-					target.hit(this.damage)
-					if (target !== undefined && target.health <= 0) {
-						this.targets!.splice(idx, 1)
-					}
-				})
+				if (this.areaOfEffect === true) {
+					this.targets.forEach((t, idx) => {
+						const ts = Entity.getInCircle(
+							t.pos.x,
+							t.pos.y,
+							this.areaOfEffectArea
+						).filter(Enemy.IsEnemy)
+						console.log(ts)
+						ts.forEach((target, index) => {
+							target.hit(this.damage)
+						})
+						if (t && t.health <= 0) {
+							this.targets!.splice(idx, 1)
+						}
+					})
+				} else {
+					this.targets.forEach((target, idx) => {
+						target.hit(this.damage)
+						if (target !== undefined && target.health <= 0) {
+							this.targets!.splice(idx, 1)
+						}
+					})
+				}
 				this.attackDelay = this.attackSpeed
 			}
 		}
+		console.log(this.targets.length, this.maxTargets)
 		if (this.targets.length < this.maxTargets) {
 			this.lookForTarget()
 		}
-	}
-
-	second() {
-		console.log(this.targets)
 	}
 
 	draw(cameraPos: Position) {

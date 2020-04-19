@@ -3,12 +3,12 @@ import { Gine, KEYCODES } from 'gine'
 import { Tower } from './entities/tower'
 import { LongRangeTower } from './entities/towers/lr-tower'
 import { MultiTower } from './entities/towers/multitower'
-import { NukeTower } from './entities/towers/nuke'
+import { SiegeTower } from './entities/towers/siege'
 
 export class UI {
 	readonly tower = Gine.store.get('tower-1')
 	selectedTower?: new (...args: any[]) => Tower
-	availableTowers: any[] = [Tower, NukeTower, LongRangeTower, MultiTower]
+	availableTowers: any[] = [Tower, SiegeTower, LongRangeTower, MultiTower]
 
 	draw() {
 		const h = Gine.CONFIG.height - 40
