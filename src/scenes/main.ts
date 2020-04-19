@@ -186,4 +186,9 @@ const LEVELS: {
 	{ maxHealth: 3, moveSpeed: 0.3, worth: 1, amount: 5 },
 	{ maxHealth: 5, moveSpeed: 0.25, worth: 2, amount: 5 },
 	{ maxHealth: 5, moveSpeed: 0.4, worth: 2, amount: 5 },
+	{ maxHealth: 10, moveSpeed: 0.2, worth: 3, amount: 5 },
+	{ maxHealth: 10, moveSpeed: 0.3, worth: 3, amount: 5 },
+	{ maxHealth: 8, moveSpeed: 0.2, worth: 3, amount: 10 },
+	{ maxHealth: 10, moveSpeed: 0.3, worth: 3, amount: 10 },
+	{ maxHealth: 25, moveSpeed: 0.35, worth: 5, amount: 5 },
 ]

@@ -5,5 +5,6 @@ export class LongRangeTower extends Tower {
 	attackSpeed: number = 10
 	damage: number = 0.1
 	range: number = 300
+	maxTargets: number = 1
 	static cost: number = 25
 }
