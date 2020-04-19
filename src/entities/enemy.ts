@@ -92,8 +92,8 @@ export class Enemy extends Entity {
 		Gine.handle.handle.fillStyle = 'black'
 	}
 
-	die() {
-		Game.ENEMYKILLED(this.worth)
+	die(earnMoney: boolean = true) {
+		Game.ENEMYKILLED(!!earnMoney ? this.worth : 0)
 		Entity.delete(this)
 	}
 

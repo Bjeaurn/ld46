@@ -6,8 +6,10 @@ export class Game {
 	static levelCompleted: boolean = false
 
 	static ENEMYKILLED(worth: number) {
-		Game.MONEY += worth
-		Game.enemies--
+		if (Game.enemies > 0) {
+			Game.MONEY += worth
+			Game.enemies--
+		}
 		if (this.enemies == 0) {
 			Game.levelCompleted = true
 		}

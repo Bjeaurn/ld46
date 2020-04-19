@@ -43,7 +43,7 @@ export class MainScene extends Scene {
 			{
 				maxHealth: level.maxHealth,
 				worth: level.worth,
-		?		moveSpeed: level.moveSpeed,
+				moveSpeed: level.moveSpeed,
 			},
 			120
 		)
@@ -58,7 +58,7 @@ export class MainScene extends Scene {
 					)
 					if (existing.length === 1) {
 						this.selectedTower = existing[0] as Tower
-					} else if(this.ui.selectedTower) {
+					} else if (this.ui.selectedTower) {
 						if (Game.MONEY >= (this.ui.selectedTower as any).cost) {
 							Game.MONEY -= (this.ui.selectedTower as any).cost
 							const t = new this.ui.selectedTower(this.tower1, xy.x, xy.y)
@@ -73,7 +73,7 @@ export class MainScene extends Scene {
 		Gine.mouse.mouse$
 			.pipe(
 				tap((e) => {
-					if(this.ui.selectedTower) {
+					if (this.ui.selectedTower) {
 						const xy = Tower.convertMouseToXY(e, this.camera)
 						const adjusted = this.camera.adjustPosition()
 						Gine.handle.draw(
@@ -121,11 +121,12 @@ export class MainScene extends Scene {
 		Entity.getInRange(this.core.pos.x, this.core.pos.y, 12)
 			.filter(Enemy.IsEnemy)
 			.map((e) => {
-				Entity.delete(e)
+				e.die(false)
 				this.core.damage()
 			})
 
 		if (Game.levelCompleted === true) {
+			console.log('updating level', Game.LEVEL)
 			Game.levelCompleted = false
 			Game.LEVEL++
 			const level = LEVELS[Game.LEVEL]
@@ -146,6 +147,14 @@ export class MainScene extends Scene {
 		}
 	}
 
+	second() {
+		Entity.entities.forEach((e: any) => {
+			if (e && e.second) {
+				e.second()
+			}
+		})
+	}
+
 	frame() {
 		this.map.draw(this.camera.adjustPosition())
 		Entity.entities.forEach((e) => {
@@ -156,10 +165,15 @@ export class MainScene extends Scene {
 		Gine.handle.setColor(242, 242, 73)
 		Gine.handle.text(Game.MONEY, Gine.CONFIG.width - moneyWidth - 20, 20)
 		Gine.handle.setColor(255, 255, 255)
-		Gine.handle.text('Level: '+Game.LEVEL+' / '+LEVELS.length, Gine.CONFIG.width-60, 40)
-		
+		Gine.handle.text(
+			'Level: ' + Game.LEVEL + ' / ' + LEVELS.length,
+			Gine.CONFIG.width - 60,
+			40
+		)
+		Gine.handle.text('Enemies: ' + Game.enemies, Gine.CONFIG.width - 60, 52)
+
 		this.ui.draw()
-		
+
 		if (this.selectedTower) {
 			showTowerData(this.selectedTower, this.camera)
 			drawRange(this.selectedTower, this.camera.adjustPosition())

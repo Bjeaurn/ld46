@@ -36,9 +36,13 @@ export class Tower extends Entity {
 				this.attackDelay = this.attackSpeed
 			}
 		}
-		if (this.targets.length <= this.maxTargets) {
+		if (this.targets.length < this.maxTargets) {
 			this.lookForTarget()
 		}
+	}
+
+	second() {
+		console.log(this.targets)
 	}
 
 	draw(cameraPos: Position) {
@@ -88,7 +92,9 @@ export class Tower extends Entity {
 				return idx === -1
 			})
 		if (targets.length > 0) {
-			this.targets.push(...targets)
+			const toAdd = this.maxTargets - this.targets.length
+			const add = targets.splice(0, toAdd)
+			this.targets.push(...add)
 		}
 	}
 

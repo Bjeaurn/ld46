@@ -6,20 +6,20 @@ import { Game } from './game'
 import { Position } from './map'
 
 export class Spawner {
-    readonly spider = Gine.store.get('spider')
-    
-    readonly lanePositions: Array<Position & { direction: number}>= [
-        {x: 512, y: 0, direction: 180},
-        {x: 1024, y: 512, direction: 270},
-        {x: 512, y: 1024, direction: 0},
-        {x: 0, y: 512, direction: 90}
-    ]
+	readonly spider = Gine.store.get('spider')
+
+	readonly lanePositions: Array<Position & { direction: number }> = [
+		{ x: 512, y: 0, direction: 180 },
+		{ x: 1024, y: 512, direction: 270 },
+		{ x: 512, y: 1024, direction: 0 },
+		{ x: 0, y: 512, direction: 90 },
+	]
 
 	constructor(
 		private target: Position,
-        private amountOfEnemiesPerLane: number,
-        private enemyOptions: EnemyOptions,
-        private spread: number = 16,
+		private amountOfEnemiesPerLane: number,
+		private enemyOptions: EnemyOptions,
+		private spread: number = 16,
 		private lanes: [boolean, boolean, boolean, boolean] = [
 			true,
 			true,
@@ -28,13 +28,24 @@ export class Spawner {
 		]
 	) {
 		this.lanes.forEach((val, idx) => {
-			if (val === true) 
+			if (val === true) {
 				for (var i = 0; i < this.amountOfEnemiesPerLane; i++) {
-                    const lane = this.lanePositions[idx]
-                    Entity.entities.push(new Enemy(this.spider, this.target, lane.direction, lane.x, lane.y, i * spread, this.enemyOptions))
-                    Game.enemies++
+					const lane = this.lanePositions[idx]
+					Entity.entities.push(
+						new Enemy(
+							this.spider,
+							this.target,
+							lane.direction,
+							lane.x,
+							lane.y,
+							i * this.spread,
+							this.enemyOptions
+						)
+					)
+					Game.enemies++
 				}
 			}
 		})
+		console.log(Entity.entities)
 	}
 }
